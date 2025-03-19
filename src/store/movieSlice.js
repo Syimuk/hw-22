@@ -3,33 +3,35 @@ import axios from "axios";
 
 const API_URL = "https://c0118f55b9fe4a75.mokky.dev/films";
 
-// Получение фильмов
 export const fetchMovies = createAsyncThunk("movies/fetchMovies", async () => {
   const response = await axios.get(API_URL);
   return response.data;
 });
 
-// Добавление фильма
 export const addMovie = createAsyncThunk("movies/addMovie", async (movie) => {
   const response = await axios.post(API_URL, movie);
   return response.data;
 });
 
-// Удаление фильма
-export const removeMovie = createAsyncThunk("movies/removeMovie", async (id) => {
-  await axios.delete(`${API_URL}/${id}`);
-  return id;
-});
+export const removeMovie = createAsyncThunk(
+  "movies/removeMovie",
+  async (id) => {
+    await axios.delete(`${API_URL}/${id}`);
+    return id;
+  }
+);
 
-// Обновление лайка на сервере
-export const toggleLike = createAsyncThunk("movies/toggleLike", async (id, { getState }) => {
-  const movie = getState().movies.movies.find((m) => m.id === id);
-  if (!movie) return;
+export const toggleLike = createAsyncThunk(
+  "movies/toggleLike",
+  async (id, { getState }) => {
+    const movie = getState().movies.movies.find((m) => m.id === id);
+    if (!movie) return;
 
-  const updatedMovie = { ...movie, liked: !movie.liked };
-  await axios.patch(`${API_URL}/${id}`, updatedMovie);
-  return updatedMovie;
-});
+    const updatedMovie = { ...movie, liked: !movie.liked };
+    await axios.patch(`${API_URL}/${id}`, updatedMovie);
+    return updatedMovie;
+  }
+);
 
 const movieSlice = createSlice({
   name: "movies",
@@ -56,7 +58,9 @@ const movieSlice = createSlice({
         state.movies.push(action.payload);
       })
       .addCase(removeMovie.fulfilled, (state, action) => {
-        state.movies = state.movies.filter((movie) => movie.id !== action.payload);
+        state.movies = state.movies.filter(
+          (movie) => movie.id !== action.payload
+        );
       })
       .addCase(toggleLike.fulfilled, (state, action) => {
         const index = state.movies.findIndex((m) => m.id === action.payload.id);
